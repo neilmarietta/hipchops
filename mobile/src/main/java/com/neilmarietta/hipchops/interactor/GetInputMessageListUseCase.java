@@ -13,20 +13,12 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class GetInputMessageListUseCase {
+public class GetInputMessageListUseCase extends UseCase {
 
     private MessageParser mMessageParser;
 
     public GetInputMessageListUseCase(MessageParser messageParser) {
         mMessageParser = messageParser;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void execute(Subscriber subscriber) {
-        buildObservable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
     }
 
     public Observable buildObservable() {

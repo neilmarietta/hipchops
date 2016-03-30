@@ -10,7 +10,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ParseMessageUseCase {
+public class ParseMessageUseCase extends UseCase {
 
     private static Gson sGson = new Gson();
 
@@ -25,14 +25,6 @@ public class ParseMessageUseCase {
     public ParseMessageUseCase setMessage(String message) {
         mMessage = message;
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void execute(Subscriber subscriber) {
-        buildObservable()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
     }
 
     public Observable buildObservable() {
