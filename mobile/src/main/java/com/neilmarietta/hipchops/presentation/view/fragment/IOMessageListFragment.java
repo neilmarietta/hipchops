@@ -15,28 +15,22 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.neilmarietta.hipchops.R;
-import com.neilmarietta.hipchops.interactor.GetInputMessageListUseCase;
-import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
+import com.neilmarietta.hipchops.internal.di.component.DaggerMessageListComponent;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.presenter.IOMessageListPresenter;
 import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
 import com.neilmarietta.hipchops.presentation.view.adapter.IOMessageAdapter;
-import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleInternetProvider;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class IOMessageListFragment extends Fragment implements IOMessageListView {
 
-    // TODO : Inject with Dagger 2
-    private MessageParser mMessageParser = new MessageParser(new WebPageTitleInternetProvider());
-    private IOMessageListPresenter mListPresenter =
-            new IOMessageListPresenter(
-                    new GetInputMessageListUseCase(mMessageParser),
-                    new ParseMessageUseCase(mMessageParser));
+    @Inject IOMessageListPresenter mListPresenter;
 
     private IOMessageAdapter mMessageAdapter;
 
@@ -48,6 +42,8 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mMessageAdapter = new IOMessageAdapter(getContext());
+
+        DaggerMessageListComponent.builder().build().inject(this);
     }
 
     @Override

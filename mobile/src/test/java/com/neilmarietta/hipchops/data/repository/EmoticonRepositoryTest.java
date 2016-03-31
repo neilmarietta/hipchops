@@ -1,9 +1,7 @@
-package com.neilmarietta.hipchops;
+package com.neilmarietta.hipchops.data.repository;
 
-import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
-import com.neilmarietta.hipchops.data.repository.datasource.EmoticonDataStoreFactory;
-import com.neilmarietta.hipchops.data.repository.net.ApiConnection;
 import com.neilmarietta.hipchops.entity.Emoticon;
+import com.neilmarietta.hipchops.internal.di.component.DaggerRepositoriesComponent;
 
 import org.junit.Test;
 
@@ -13,12 +11,12 @@ import static org.junit.Assert.assertEquals;
 
 public class EmoticonRepositoryTest {
 
-    private static EmoticonRepository sEmoticonRepository =
-            new EmoticonRepository(new EmoticonDataStoreFactory(ApiConnection.createAdapter()));
+    private static EmoticonRepository mEmoticonRepository =
+            DaggerRepositoriesComponent.create().emoticonRepository();
 
     @Test
     public void getEmoticonTest() {
-        sEmoticonRepository.getEmoticon("fonzie")
+        mEmoticonRepository.getEmoticon("fonzie")
                 .subscribe(new Subscriber<Emoticon>() {
                     @Override
                     public void onCompleted() {

@@ -1,22 +1,27 @@
 package com.neilmarietta.hipchops.interactor;
 
+import com.google.gson.Gson;
 import com.neilmarietta.hipchops.data.InputOutput;
 import com.neilmarietta.hipchops.data.TestCases;
+import com.neilmarietta.hipchops.entity.Message;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class GetInputMessageListUseCase extends UseCase {
 
-    private MessageParser mMessageParser;
+    private static Gson sGson = new Gson();
 
+    private final MessageParser mMessageParser;
+
+    @Inject
     public GetInputMessageListUseCase(MessageParser messageParser) {
         mMessageParser = messageParser;
     }
@@ -28,7 +33,7 @@ public class GetInputMessageListUseCase extends UseCase {
                 final List<IOMessage> messages = new ArrayList<>();
 
                 for (final InputOutput current : TestCases.sTestArray) {
-                    new ParseMessageUseCase(mMessageParser).setMessage(current.in).execute(new Subscriber<String>() {
+                    new ParseMessageUseCase(current.in, mMessageParser).execute(new Subscriber<Message>() {
                         @Override
                         public void onCompleted() {
                             if (messages.size() == TestCases.sTestArray.length)
@@ -41,8 +46,11 @@ public class GetInputMessageListUseCase extends UseCase {
                         }
 
                         @Override
-                        public void onNext(String result) {
-                            messages.add(new IOMessage(current.in, result));
+                        public void onNext(Message result) {
+                            // TODO : Do not do toJson on mainThread
+                            String output = sGson.toJson(result);
+
+                            messages.add(new IOMessage(current.in, output, result));
                             subscriber.onNext(messages);
                         }
                     });

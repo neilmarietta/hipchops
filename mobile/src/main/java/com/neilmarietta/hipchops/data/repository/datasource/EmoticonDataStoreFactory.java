@@ -1,11 +1,14 @@
 package com.neilmarietta.hipchops.data.repository.datasource;
 
+import javax.inject.Inject;
+
 import retrofit2.Retrofit;
 
 public class EmoticonDataStoreFactory {
 
     private final Retrofit mAdapter;
 
+    @Inject
     public EmoticonDataStoreFactory(Retrofit adapter) {
         mAdapter = adapter;
     }

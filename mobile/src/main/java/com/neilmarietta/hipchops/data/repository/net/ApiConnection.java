@@ -24,9 +24,18 @@ public class ApiConnection {
      */
     private static String AUTH_TOKEN = "HmCbgMNqEMslnQK0XkBx0dXnQDwz5FlCBCqJqtLI";
 
-    public static Retrofit createAdapter() {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+    public static Retrofit createAdapter(OkHttpClient client) {
+        return new Retrofit.Builder()
+                .baseUrl(HTTPS_START_URI + BASE_API_URL)
+                .client(client)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    public static OkHttpClient createOkHttpClient(HttpLoggingInterceptor httpLoggingInterceptor) {
+        return new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -39,12 +48,9 @@ public class ApiConnection {
                     }
                 })
                 .build();
+    }
 
-        return new Retrofit.Builder()
-                .baseUrl(HTTPS_START_URI + BASE_API_URL)
-                .client(client)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    public static HttpLoggingInterceptor createHttpLoggingInterceptor() {
+        return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 }

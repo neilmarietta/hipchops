@@ -2,27 +2,33 @@ package com.neilmarietta.hipchops.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.neilmarietta.hipchops.data.TestCases;
+import com.neilmarietta.hipchops.entity.Message;
 import com.neilmarietta.hipchops.interactor.GetInputMessageListUseCase;
 import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
+import com.neilmarietta.hipchops.internal.di.component.DaggerMessageComponent;
+import com.neilmarietta.hipchops.internal.di.module.MessageModule;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Subscriber;
 
 public class IOMessageListPresenter implements Presenter {
 
-    private ParseMessageUseCase mParseMessageUseCase;
+    private static Gson sGson = new Gson();
+
     private GetInputMessageListUseCase mGetInputMessageListUseCase;
 
     private IOMessageListView mMessageListView;
 
-    public IOMessageListPresenter(GetInputMessageListUseCase inputMessageListUseCase,
-                                  ParseMessageUseCase parseMessageUseCase) {
+    @Inject
+    public IOMessageListPresenter(GetInputMessageListUseCase inputMessageListUseCase) {
         mGetInputMessageListUseCase = inputMessageListUseCase;
-        mParseMessageUseCase = parseMessageUseCase;
     }
 
     public void setView(@NonNull IOMessageListView view) {
@@ -71,18 +77,24 @@ public class IOMessageListPresenter implements Presenter {
         }
     }
 
+    private ParseMessageUseCase getParseMessageUseCase(String input) {
+        return DaggerMessageComponent.builder()
+                .messageModule(new MessageModule(input))
+                .build().parseMessageUseCase();
+    }
+
     private void getMessage() {
         String input = TestCases.getNextInput();
-        mParseMessageUseCase.setMessage(input).execute(new ParseOutputSubscriber(input));
+        getParseMessageUseCase(input).execute(new ParseOutputSubscriber(input));
     }
 
     private void getMessage(String input) {
-        mParseMessageUseCase.setMessage(input).execute(new ParseOutputSubscriber(input));
+        getParseMessageUseCase(input).execute(new ParseOutputSubscriber(input));
     }
 
-    private final class ParseOutputSubscriber extends Subscriber<String> {
+    private final class ParseOutputSubscriber extends Subscriber<Message> {
 
-        private String mInput;
+        private final String mInput;
 
         public ParseOutputSubscriber(String input) {
             mInput = input;
@@ -100,8 +112,11 @@ public class IOMessageListPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(String output) {
-            IOMessageListPresenter.this.mMessageListView.addMessage(new IOMessage(mInput, output));
+        public void onNext(Message result) {
+            // TODO : Do not do toJson on mainThread
+            String output = sGson.toJson(result);
+
+            IOMessageListPresenter.this.mMessageListView.addMessage(new IOMessage(mInput, output, result));
         }
     }
 

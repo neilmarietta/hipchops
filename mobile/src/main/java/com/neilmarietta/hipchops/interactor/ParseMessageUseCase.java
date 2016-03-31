@@ -1,38 +1,33 @@
 package com.neilmarietta.hipchops.interactor;
 
-import com.google.gson.Gson;
+import com.neilmarietta.hipchops.entity.Message;
 import com.neilmarietta.hipchops.util.MessageParser;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ParseMessageUseCase extends UseCase {
 
-    private static Gson sGson = new Gson();
+    private final MessageParser mMessageParser;
 
-    private MessageParser mMessageParser;
+    private final String mMessage;
 
-    private String mMessage;
-
-    public ParseMessageUseCase(MessageParser messageParser) {
+    @Inject
+    public ParseMessageUseCase(String message, MessageParser messageParser) {
         mMessageParser = messageParser;
-    }
-
-    public ParseMessageUseCase setMessage(String message) {
         mMessage = message;
-        return this;
     }
 
     public Observable buildObservable() {
-        return Observable.create(new rx.Observable.OnSubscribe<String>() {
+        return Observable.create(new rx.Observable.OnSubscribe<Message>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super Message> subscriber) {
                 try {
-                    subscriber.onNext(sGson.toJson(mMessageParser.parse(mMessage)));
+                    subscriber.onNext(mMessageParser.parse(mMessage));
                     subscriber.onCompleted();
                 } catch (IOException e) {
                     subscriber.onError(e);
