@@ -16,6 +16,18 @@ public class Message {
     @SerializedName("links")
     private List<Link> mLinks;
 
+    public List<String> getMentions() {
+        return mMentions;
+    }
+
+    public List<String> getEmoticons() {
+        return mEmoticons;
+    }
+
+    public List<Link> getLinks() {
+        return mLinks;
+    }
+
     public void addMention(String mention) {
         if (mMentions == null)
             mMentions = new ArrayList<>();
