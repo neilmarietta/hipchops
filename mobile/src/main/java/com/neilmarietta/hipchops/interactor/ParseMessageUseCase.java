@@ -5,8 +5,6 @@ import com.neilmarietta.hipchops.util.MessageParser;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 import rx.Subscriber;
 
@@ -16,7 +14,6 @@ public class ParseMessageUseCase extends UseCase {
 
     private final String mMessage;
 
-    @Inject
     public ParseMessageUseCase(String message, MessageParser messageParser) {
         mMessageParser = messageParser;
         mMessage = message;

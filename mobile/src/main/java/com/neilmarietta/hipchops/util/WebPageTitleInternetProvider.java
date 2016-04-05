@@ -12,6 +12,7 @@ import okhttp3.ResponseBody;
 /**
  * WebPageTitleProvider with Internet connection. Used in production.
  */
+// TODO : Add Cache
 public class WebPageTitleInternetProvider implements WebPageTitleProvider {
 
     private static String HTTP_PREFIX = "http://";

@@ -1,12 +1,10 @@
 package com.neilmarietta.hipchops.internal.di.module;
 
 import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
-import com.neilmarietta.hipchops.interactor.UseCase;
+import com.neilmarietta.hipchops.internal.di.PerMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
 import com.neilmarietta.hipchops.util.WebPageTitleInternetProvider;
 import com.neilmarietta.hipchops.util.WebPageTitleProvider;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,23 +19,19 @@ public class MessageModule {
     }
 
     @Provides
-    String provideMessage() {
-        return mMessage;
-    }
-
-    @Provides
-    UseCase provideParseMessageUseCase(MessageParser messageParser) {
+    @PerMessage
+    ParseMessageUseCase provideParseMessageUseCase(MessageParser messageParser) {
         return new ParseMessageUseCase(mMessage, messageParser);
     }
 
     @Provides
-    @Singleton
+    @PerMessage
     MessageParser provideMessageParser(WebPageTitleProvider webPageTitleProvider) {
         return new MessageParser(webPageTitleProvider);
     }
 
     @Provides
-    @Singleton
+    @PerMessage
     WebPageTitleProvider provideWebPageTitleProvider() {
         return new WebPageTitleInternetProvider();
     }

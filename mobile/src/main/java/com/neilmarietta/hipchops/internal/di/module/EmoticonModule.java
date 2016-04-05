@@ -2,7 +2,7 @@ package com.neilmarietta.hipchops.internal.di.module;
 
 import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
 import com.neilmarietta.hipchops.interactor.GetEmoticonUseCase;
-import com.neilmarietta.hipchops.interactor.UseCase;
+import com.neilmarietta.hipchops.internal.di.PerUser;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,12 +17,8 @@ public class EmoticonModule {
     }
 
     @Provides
-    String provideEmoticonIdOrShortcut() {
-        return mEmoticonIdOrShortcut;
-    }
-
-    @Provides
-    UseCase provideGetEmoticonUseCase(EmoticonRepository emoticonRepository) {
+    @PerUser
+    GetEmoticonUseCase provideGetEmoticonUseCase(EmoticonRepository emoticonRepository) {
         return new GetEmoticonUseCase(mEmoticonIdOrShortcut, emoticonRepository);
     }
 }

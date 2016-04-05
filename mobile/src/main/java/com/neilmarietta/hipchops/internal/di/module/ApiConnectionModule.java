@@ -1,5 +1,6 @@
 package com.neilmarietta.hipchops.internal.di.module;
 
+import com.neilmarietta.hipchops.data.cache.EmoticonCache;
 import com.neilmarietta.hipchops.data.repository.net.ApiConnection;
 
 import javax.inject.Singleton;
@@ -12,6 +13,12 @@ import retrofit2.Retrofit;
 
 @Module
 public class ApiConnectionModule {
+
+    @Provides
+    @Singleton
+    EmoticonCache provideEmoticonCache() {
+        return new EmoticonCache();
+    }
 
     @Provides
     @Singleton

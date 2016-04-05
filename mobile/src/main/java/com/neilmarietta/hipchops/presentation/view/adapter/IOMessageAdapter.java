@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.neilmarietta.hipchops.HipChopsApplication;
 import com.neilmarietta.hipchops.R;
 import com.neilmarietta.hipchops.entity.Emoticon;
 import com.neilmarietta.hipchops.internal.di.component.DaggerEmoticonComponent;
@@ -25,11 +26,13 @@ import rx.Subscriber;
 
 public class IOMessageAdapter extends RecyclerView.Adapter<IOMessageAdapter.IOMessageViewHolder> {
 
+    private final Context mContext;
     private final LayoutInflater mLayoutInflater;
     private List<IOMessage> mMessages;
 
     public IOMessageAdapter(Context context) {
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContext = context;
     }
 
     public void setMessages(List<IOMessage> messages) {
@@ -111,7 +114,9 @@ public class IOMessageAdapter extends RecyclerView.Adapter<IOMessageAdapter.IOMe
     }
 
     private void fetchEmoticon(final String shortcut, final IOMessage message) {
+        HipChopsApplication application = (HipChopsApplication) mContext.getApplicationContext();
         DaggerEmoticonComponent.builder()
+                .apiConnectionComponent(application.getApiConnectionComponent())
                 .emoticonModule(new EmoticonModule(shortcut))
                 .build()
                 .emoticonUseCase().execute(new Subscriber<Emoticon>() {

@@ -7,11 +7,9 @@ import com.neilmarietta.hipchops.entity.Emoticon;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import rx.Observable;
 
-@Singleton
 public class EmoticonRepository implements EmoticonDataStore {
 
     private final EmoticonDataStoreFactory mEmoticonDataStoreFactory;

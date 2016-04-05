@@ -10,8 +10,6 @@ import com.neilmarietta.hipchops.util.MessageParser;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 import rx.Subscriber;
 
@@ -21,7 +19,6 @@ public class GetInputMessageListUseCase extends UseCase {
 
     private final MessageParser mMessageParser;
 
-    @Inject
     public GetInputMessageListUseCase(MessageParser messageParser) {
         mMessageParser = messageParser;
     }

@@ -16,7 +16,7 @@ public class MessageListModule {
 
     @Provides
     @Singleton
-    UseCase provideGetInputMessageListCase(MessageParser messageParser) {
+    GetInputMessageListUseCase provideGetInputMessageListCase(MessageParser messageParser) {
         return new GetInputMessageListUseCase(messageParser);
     }
 
