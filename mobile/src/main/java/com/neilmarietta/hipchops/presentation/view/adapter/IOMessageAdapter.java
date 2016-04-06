@@ -100,8 +100,7 @@ public class IOMessageAdapter extends RecyclerView.Adapter<IOMessageAdapter.IOMe
     }
 
     private void fetchEmoticonsIfNeeded(IOMessage message) {
-        // TODO : Add Emoticon Cache (EmoticonDataStoreFactory)
-
+        // TODO : Move the fetching process in another class
         List<String> missingEmoticons = message.getMissingEmoticons();
         if (missingEmoticons.size() > 0) {
             for (String shortcut : missingEmoticons) {
@@ -114,6 +113,7 @@ public class IOMessageAdapter extends RecyclerView.Adapter<IOMessageAdapter.IOMe
     }
 
     private void fetchEmoticon(final String shortcut, final IOMessage message) {
+        // TODO : Move the fetching process in another class
         HipChopsApplication application = (HipChopsApplication) mContext.getApplicationContext();
         DaggerEmoticonComponent.builder()
                 .apiConnectionComponent(application.getApiConnectionComponent())
