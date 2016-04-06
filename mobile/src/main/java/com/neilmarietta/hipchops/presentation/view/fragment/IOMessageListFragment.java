@@ -37,6 +37,10 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
     @Bind(R.id.rv_messages) RecyclerView mMessageRecycledView;
     @Bind(R.id.rl_progress) RelativeLayout mProgressRelativeLayout;
 
+    public IOMessageListFragment() {
+        setRetainInstance(true);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
