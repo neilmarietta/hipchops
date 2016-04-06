@@ -1,9 +1,9 @@
-package com.neilmarietta.hipchops.util;
+package com.neilmarietta.hipchops.data.repository.provider;
 
 import java.util.HashMap;
 
 /**
- * WebPageTitleProvider without Internet connection. Used by Unit Test.
+ * WebPageTitleProvider without Internet connection (cached).
  */
 public class WebPageTitleLocalProvider implements WebPageTitleProvider {
 
@@ -17,5 +17,13 @@ public class WebPageTitleLocalProvider implements WebPageTitleProvider {
     @Override
     public String getWebPageTitle(String url) {
         return INTERNET_URLS.get(url);
+    }
+
+    public boolean inProvider(String url) {
+        return INTERNET_URLS.containsKey(url);
+    }
+
+    public void put(String url, String pageTitle) {
+        INTERNET_URLS.put(url, pageTitle);
     }
 }

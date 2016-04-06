@@ -1,4 +1,6 @@
-package com.neilmarietta.hipchops.util;
+package com.neilmarietta.hipchops.data.repository.provider;
+
+import com.neilmarietta.hipchops.util.Regex;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -10,13 +12,18 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
- * WebPageTitleProvider with Internet connection. Used in production.
+ * WebPageTitleProvider with Internet connection.
  */
-// TODO : Add Cache
 public class WebPageTitleInternetProvider implements WebPageTitleProvider {
 
     private static String HTTP_PREFIX = "http://";
     private static String HTTPS_PREFIX = "https://";
+
+    private final WebPageTitleLocalProvider mWebPageTitleLocalProvider;
+
+    public WebPageTitleInternetProvider(WebPageTitleLocalProvider webPageTitleLocalProvider) {
+        mWebPageTitleLocalProvider = webPageTitleLocalProvider;
+    }
 
     @Override
     public String getWebPageTitle(String url) throws IOException {
@@ -33,8 +40,14 @@ public class WebPageTitleInternetProvider implements WebPageTitleProvider {
 
         if (contentType.type().equals("text") && contentType.subtype().equals("html")) {
             Matcher matcher = Regex.HTML_TITLE.matcher(body.string());
-            if (matcher.find())
-                return matcher.group(1).replace("\u0026quot;", "");
+            if (matcher.find()) {
+                String pageTitle = matcher.group(1).replace("\u0026quot;", "");
+
+                // Remember pageTitle
+                mWebPageTitleLocalProvider.put(url, pageTitle);
+
+                return pageTitle;
+            }
         }
 
         return null;

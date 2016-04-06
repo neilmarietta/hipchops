@@ -2,10 +2,12 @@ package com.neilmarietta.hipchops;
 
 import com.google.gson.Gson;
 import com.neilmarietta.hipchops.data.TestCases;
+import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
+import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleLocalProvider;
+import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleProviderFactory;
 import com.neilmarietta.hipchops.entity.Link;
 import com.neilmarietta.hipchops.entity.Message;
 import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleLocalProvider;
 
 import org.junit.Test;
 
@@ -16,7 +18,15 @@ import static org.junit.Assert.assertEquals;
 public class MessageTest {
 
     private static Gson sGson = new Gson();
-    private static MessageParser sParser = new MessageParser(new WebPageTitleLocalProvider());
+
+    private static WebPageTitleLocalProvider mWebPageTitleLocalProvider =
+            new WebPageTitleLocalProvider();
+    private static WebPageTitleProviderFactory mWebPageTitleProviderFactory =
+            new WebPageTitleProviderFactory(mWebPageTitleLocalProvider);
+    private static WebPageTitleRepository mWebPageTitleRepository =
+            new WebPageTitleRepository(mWebPageTitleProviderFactory);
+
+    private static MessageParser sParser = new MessageParser(mWebPageTitleRepository);
 
     private void assertMessageEquals(String expectedJson, String actualInput) {
         // Avoid different JSON indentation/format/order

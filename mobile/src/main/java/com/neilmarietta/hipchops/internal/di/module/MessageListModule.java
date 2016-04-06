@@ -1,10 +1,9 @@
 package com.neilmarietta.hipchops.internal.di.module;
 
+import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
+import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleLocalProvider;
 import com.neilmarietta.hipchops.interactor.GetInputMessageListUseCase;
-import com.neilmarietta.hipchops.interactor.UseCase;
 import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleInternetProvider;
-import com.neilmarietta.hipchops.util.WebPageTitleProvider;
 
 import javax.inject.Singleton;
 
@@ -22,13 +21,13 @@ public class MessageListModule {
 
     @Provides
     @Singleton
-    MessageParser provideMessageParser(WebPageTitleProvider webPageTitleProvider) {
-        return new MessageParser(webPageTitleProvider);
+    MessageParser provideMessageParser(WebPageTitleRepository webPageTitleRepository) {
+        return new MessageParser(webPageTitleRepository);
     }
 
     @Provides
     @Singleton
-    WebPageTitleProvider provideWebPageTitleProvider() {
-        return new WebPageTitleInternetProvider();
+    WebPageTitleLocalProvider provideWebPageTitleLocalProvider() {
+        return new WebPageTitleLocalProvider();
     }
 }

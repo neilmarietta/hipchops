@@ -1,10 +1,10 @@
 package com.neilmarietta.hipchops.internal.di.module;
 
+import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
+import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleLocalProvider;
 import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
 import com.neilmarietta.hipchops.internal.di.PerMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleInternetProvider;
-import com.neilmarietta.hipchops.util.WebPageTitleProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -26,13 +26,13 @@ public class MessageModule {
 
     @Provides
     @PerMessage
-    MessageParser provideMessageParser(WebPageTitleProvider webPageTitleProvider) {
-        return new MessageParser(webPageTitleProvider);
+    MessageParser provideMessageParser(WebPageTitleRepository webPageTitleRepository) {
+        return new MessageParser(webPageTitleRepository);
     }
 
     @Provides
     @PerMessage
-    WebPageTitleProvider provideWebPageTitleProvider() {
-        return new WebPageTitleInternetProvider();
+    WebPageTitleLocalProvider provideWebPageTitleLocalProvider() {
+        return new WebPageTitleLocalProvider();
     }
 }
