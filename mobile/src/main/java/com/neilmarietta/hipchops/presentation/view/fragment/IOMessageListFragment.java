@@ -14,8 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.neilmarietta.hipchops.HipChopsApplication;
 import com.neilmarietta.hipchops.R;
-import com.neilmarietta.hipchops.internal.di.component.DaggerMessageListComponent;
+import com.neilmarietta.hipchops.internal.di.component.DaggerMessageComponent;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.presenter.IOMessageListPresenter;
 import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
@@ -47,7 +48,10 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
         setHasOptionsMenu(true);
         mMessageAdapter = new IOMessageAdapter(getContext());
 
-        DaggerMessageListComponent.builder().build().inject(this);
+        DaggerMessageComponent.builder()
+                .apiConnectionComponent(((HipChopsApplication) (getActivity().getApplicationContext()))
+                        .getApiConnectionComponent())
+                .build().inject(this);
     }
 
     @Override
@@ -105,8 +109,7 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
 
     @Override
     public void renderMessageList(List<IOMessage> messages) {
-        if (messages != null)
-            mMessageAdapter.setMessages(messages);
+        mMessageAdapter.setMessages(messages);
     }
 
     @Override

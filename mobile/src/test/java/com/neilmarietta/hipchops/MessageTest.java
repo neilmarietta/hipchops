@@ -11,8 +11,6 @@ import com.neilmarietta.hipchops.util.MessageParser;
 
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
 public class MessageTest {
@@ -30,24 +28,16 @@ public class MessageTest {
 
     private void assertMessageEquals(String expectedJson, String actualInput) {
         // Avoid different JSON indentation/format/order
-        try {
-            assertEquals(
-                    // By regenerating JSON from JSON
-                    sGson.toJson(sGson.fromJson(expectedJson, Message.class)),
-                    sGson.toJson(sParser.parse(actualInput)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals(
+                // By regenerating JSON from JSON
+                sGson.toJson(sGson.fromJson(expectedJson, Message.class)),
+                sGson.toJson(sParser.parse(actualInput)));
     }
 
     private void assertMessageEquals(Message expectedMessage, String actualInput) {
-        try {
-            assertEquals(
-                    sGson.toJson(expectedMessage),
-                    sGson.toJson(sParser.parse(actualInput)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals(
+                sGson.toJson(expectedMessage),
+                sGson.toJson(sParser.parse(actualInput)));
     }
 
     @Test

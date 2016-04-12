@@ -2,24 +2,24 @@ package com.neilmarietta.hipchops.interactor;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.CompositeSubscription;
 
 public abstract class UseCase {
 
-    private Subscription mSubscription = Subscriptions.empty();
+    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     private rx.Scheduler mSubscribeOn = Schedulers.newThread();
     private rx.Scheduler mObserveOn = AndroidSchedulers.mainThread();
 
     @SuppressWarnings("unchecked")
-    public final void execute(Subscriber subscriber) {
-        mSubscription = buildObservable()
-                .subscribeOn(mSubscribeOn)
-                .observeOn(mObserveOn)
-                .subscribe(subscriber);
+    public final void execute(Observable observable, Subscriber subscriber) {
+        mCompositeSubscription
+                .add(observable
+                        .subscribeOn(mSubscribeOn)
+                        .observeOn(mObserveOn)
+                        .subscribe(subscriber));
     }
 
     public void setSubscribeOn(rx.Scheduler scheduler) {
@@ -30,11 +30,7 @@ public abstract class UseCase {
         mObserveOn = scheduler;
     }
 
-    protected abstract Observable buildObservable();
-
     public void unsubscribe() {
-        if (!mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
+        mCompositeSubscription.clear();
     }
 }

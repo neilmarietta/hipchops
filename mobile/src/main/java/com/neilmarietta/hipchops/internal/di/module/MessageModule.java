@@ -1,8 +1,10 @@
 package com.neilmarietta.hipchops.internal.di.module;
 
+import com.google.gson.Gson;
+import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
 import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
 import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleLocalProvider;
-import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
+import com.neilmarietta.hipchops.interactor.MessageUseCase;
 import com.neilmarietta.hipchops.internal.di.PerMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
 
@@ -12,16 +14,16 @@ import dagger.Provides;
 @Module
 public class MessageModule {
 
-    private final String mMessage;
-
-    public MessageModule(String message) {
-        mMessage = message;
+    @Provides
+    @PerMessage
+    MessageUseCase provideMessageUseCase(Gson gson, MessageParser messageParser, EmoticonRepository emoticonRepository) {
+        return new MessageUseCase(gson, messageParser, emoticonRepository);
     }
 
     @Provides
     @PerMessage
-    ParseMessageUseCase provideParseMessageUseCase(MessageParser messageParser) {
-        return new ParseMessageUseCase(mMessage, messageParser);
+    Gson provideGson() {
+        return new Gson();
     }
 
     @Provides

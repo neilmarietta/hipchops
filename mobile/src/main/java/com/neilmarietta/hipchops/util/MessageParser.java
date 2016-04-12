@@ -15,7 +15,7 @@ public class MessageParser {
         mWebPageTitleRepository = webPageTitleRepository;
     }
 
-    public Message parse(String input) throws IOException {
+    public Message parse(String input) {
         Message message = new Message();
 
         Matcher mentions = Regex.MENTION.matcher(input);
@@ -37,7 +37,12 @@ public class MessageParser {
         Matcher links = Regex.LINK.matcher(input);
         while (links.find()) {
             String link = links.group();
-            String title = mWebPageTitleRepository.getWebPageTitle(link);
+            String title;
+            try {
+                title = mWebPageTitleRepository.getWebPageTitle(link);
+            } catch (IOException e) {
+                title = e.getMessage();
+            }
             message.addLink(new Link(title, link));
         }
 
