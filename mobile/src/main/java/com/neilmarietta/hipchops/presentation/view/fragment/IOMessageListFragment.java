@@ -49,8 +49,7 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
         mMessageAdapter = new IOMessageAdapter(getContext());
 
         DaggerMessageComponent.builder()
-                .apiConnectionComponent(((HipChopsApplication) (getActivity().getApplicationContext()))
-                        .getApiConnectionComponent())
+                .apiConnectionComponent(HipChopsApplication.from(getContext()).getApiConnectionComponent())
                 .build().inject(this);
     }
 

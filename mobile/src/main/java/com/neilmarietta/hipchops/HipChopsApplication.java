@@ -1,6 +1,8 @@
 package com.neilmarietta.hipchops;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.neilmarietta.hipchops.internal.di.component.ApiConnectionComponent;
 import com.neilmarietta.hipchops.internal.di.component.DaggerApiConnectionComponent;
@@ -30,5 +32,9 @@ public class HipChopsApplication extends Application {
 
     public ApiConnectionComponent getApiConnectionComponent() {
         return mApiConnectionComponent;
+    }
+
+    public static HipChopsApplication from(@NonNull Context context) {
+        return (HipChopsApplication) context.getApplicationContext();
     }
 }
