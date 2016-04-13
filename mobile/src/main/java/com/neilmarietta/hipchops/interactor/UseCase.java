@@ -10,16 +10,25 @@ public abstract class UseCase {
 
     private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
-    private rx.Scheduler mSubscribeOn = Schedulers.newThread();
-    private rx.Scheduler mObserveOn = AndroidSchedulers.mainThread();
+    private rx.Scheduler mSubscribeOn = null;
+    private rx.Scheduler mObserveOn = null;
 
     @SuppressWarnings("unchecked")
     public final void execute(Observable observable, Subscriber subscriber) {
+        checkSchedulers();
         mCompositeSubscription
                 .add(observable
                         .subscribeOn(mSubscribeOn)
                         .observeOn(mObserveOn)
                         .subscribe(subscriber));
+    }
+
+    private void checkSchedulers() {
+        // Add default schedulers
+        if (mSubscribeOn == null)
+            mSubscribeOn = Schedulers.newThread();
+        if (mObserveOn == null)
+            mObserveOn = AndroidSchedulers.mainThread();
     }
 
     public void setSubscribeOn(rx.Scheduler scheduler) {

@@ -1,13 +1,14 @@
 package com.neilmarietta.hipchops.interactor;
 
 import com.google.gson.Gson;
-import com.neilmarietta.hipchops.data.InputOutput;
-import com.neilmarietta.hipchops.data.TestCases;
 import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
 import com.neilmarietta.hipchops.entity.Emoticon;
 import com.neilmarietta.hipchops.entity.Message;
+import com.neilmarietta.hipchops.presentation.model.EmoticonUrls;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
+
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -25,16 +26,12 @@ public class MessageUseCase extends UseCase {
         mEmoticonRepository = emoticonRepository;
     }
 
-    public void parseMessage(String message, Subscriber subscriber) {
-        execute(parseMessage(message), subscriber);
-    }
-
     public void getMessage(String input, Subscriber subscriber) {
         execute(getMessage(input), subscriber);
     }
 
-    public void getMessageList(Subscriber subscriber) {
-        execute(getMessageList(), subscriber);
+    public void getMessageList(List<String> messages, Subscriber subscriber) {
+        execute(getMessageList(messages), subscriber);
     }
 
     private Observable<Message> parseMessage(String message) {
@@ -77,7 +74,7 @@ public class MessageUseCase extends UseCase {
                 .flatMapIterable(new Func1<IOMessage, Iterable<String>>() {
                     @Override
                     public Iterable<String> call(IOMessage message) {
-                        return message.getMissingEmoticons();
+                        return EmoticonUrls.getMissingEmoticonUrlShortcuts(message);
                     }
                 })
                 .flatMap(new Func1<String, Observable<Emoticon>>() {
@@ -95,7 +92,7 @@ public class MessageUseCase extends UseCase {
                 .map(new Func1<Emoticon, IOMessage>() {
                     @Override
                     public IOMessage call(Emoticon emoticon) {
-                        message.getEmoticons().put(emoticon.getShortcut(), emoticon);
+                        EmoticonUrls.CACHE.put(emoticon.getShortcut(), emoticon.getUrl());
                         return message;
                     }
                 })
@@ -105,15 +102,9 @@ public class MessageUseCase extends UseCase {
                 .last();
     }
 
-    private Observable<IOMessage> getMessageList() {
+    private Observable<IOMessage> getMessageList(List<String> messages) {
         return Observable
-                .from(TestCases.sTestArray)
-                .map(new Func1<InputOutput, String>() {
-                    @Override
-                    public String call(InputOutput inputOutput) {
-                        return inputOutput.in;
-                    }
-                })
+                .from(messages)
                 .concatMap(new Func1<String, Observable<IOMessage>>() {
                     @Override
                     public Observable<IOMessage> call(final String input) {

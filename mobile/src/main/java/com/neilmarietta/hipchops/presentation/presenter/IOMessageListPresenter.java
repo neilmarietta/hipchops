@@ -47,7 +47,7 @@ public class IOMessageListPresenter implements Presenter {
     }
 
     private void getMessageList() {
-        mMessageUseCase.getMessageList(new IOMessageListSubscriber());
+        mMessageUseCase.getMessageList(TestCases.getInputs(), new IOMessageListSubscriber());
     }
 
     private void getMessage() {

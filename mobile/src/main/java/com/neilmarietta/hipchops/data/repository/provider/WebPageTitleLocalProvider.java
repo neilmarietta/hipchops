@@ -1,6 +1,7 @@
 package com.neilmarietta.hipchops.data.repository.provider;
 
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * WebPageTitleProvider without Internet connection (cached).
@@ -25,5 +26,9 @@ public class WebPageTitleLocalProvider implements WebPageTitleProvider {
 
     public void put(String url, String pageTitle) {
         INTERNET_URLS.put(url, pageTitle);
+    }
+
+    public Set<String> keySet() {
+        return INTERNET_URLS.keySet();
     }
 }

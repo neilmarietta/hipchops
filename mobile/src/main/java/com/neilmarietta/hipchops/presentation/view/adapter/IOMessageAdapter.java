@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.neilmarietta.hipchops.R;
-import com.neilmarietta.hipchops.entity.Emoticon;
+import com.neilmarietta.hipchops.presentation.model.EmoticonUrls;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.squareup.picasso.Picasso;
 
@@ -79,25 +79,20 @@ public class IOMessageAdapter extends RecyclerView.Adapter<IOMessageAdapter.IOMe
         Context context = holder.emoticons.getContext();
         holder.emoticons.removeAllViews();
 
-        List<String> emoticons = message.getMessage().getEmoticons();
-        if (emoticons != null) {
-            for (String shortcut : emoticons) {
-                Emoticon emoticon = message.getEmoticons().get(shortcut);
-                if (emoticon == null) continue;
+        for (String shortcut : message.getMessage().getEmoticons()) {
+            String url = EmoticonUrls.CACHE.get(shortcut);
 
-                String url = emoticon.getUrl();
-                if (url == null) continue;
+            if (url == null) continue;
 
-                ImageView imageView = new ImageView(context);
-                holder.emoticons.addView(imageView);
+            ImageView imageView = new ImageView(context);
+            holder.emoticons.addView(imageView);
 
-                Picasso picasso = Picasso.with(context);
-                picasso.setIndicatorsEnabled(true);
-                picasso.load(url)
-                        .resize(100, 100)
-                        .centerInside()
-                        .into(imageView);
-            }
+            Picasso picasso = Picasso.with(context);
+            picasso.setIndicatorsEnabled(true);
+            picasso.load(url)
+                    .resize(100, 100)
+                    .centerInside()
+                    .into(imageView);
         }
     }
 

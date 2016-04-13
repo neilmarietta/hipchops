@@ -1,5 +1,8 @@
 package com.neilmarietta.hipchops.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestCases {
 
     public static InputOutput[] sTestArray = new InputOutput[]{
@@ -24,5 +27,12 @@ public class TestCases {
 
     public static String getNextInput() {
         return sTestArray[sCurrentIndex++ % sTestArray.length].in;
+    }
+
+    public static List<String> getInputs() {
+        List<String> inputs = new ArrayList<>();
+        for (InputOutput inputOutput : TestCases.sTestArray)
+            inputs.add(inputOutput.in);
+        return inputs;
     }
 }

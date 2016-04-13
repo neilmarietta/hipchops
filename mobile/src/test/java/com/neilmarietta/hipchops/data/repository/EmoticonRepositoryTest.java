@@ -3,6 +3,7 @@ package com.neilmarietta.hipchops.data.repository;
 import com.neilmarietta.hipchops.entity.Emoticon;
 import com.neilmarietta.hipchops.internal.di.component.DaggerRepositoriesComponent;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rx.Subscriber;
@@ -14,6 +15,7 @@ public class EmoticonRepositoryTest {
     private static EmoticonRepository mEmoticonRepository =
             DaggerRepositoriesComponent.create().emoticonRepository();
 
+    @Ignore
     @Test
     public void getEmoticonTest() {
         mEmoticonRepository.getEmoticon("fonzie")
