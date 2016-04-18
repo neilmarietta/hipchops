@@ -16,10 +16,11 @@ import android.widget.RelativeLayout;
 
 import com.neilmarietta.hipchops.HipChopsApplication;
 import com.neilmarietta.hipchops.R;
+import com.neilmarietta.hipchops.contract.IOMessageListContract;
 import com.neilmarietta.hipchops.internal.di.component.DaggerMessageComponent;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.presenter.IOMessageListPresenter;
-import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
+import com.neilmarietta.hipchops.contract.LoadDataView;
 import com.neilmarietta.hipchops.presentation.view.adapter.IOMessageAdapter;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class IOMessageListFragment extends Fragment implements IOMessageListView {
+public class IOMessageListFragment extends Fragment implements IOMessageListContract.View {
 
     @Inject IOMessageListPresenter mListPresenter;
 

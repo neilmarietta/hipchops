@@ -10,36 +10,39 @@ import com.neilmarietta.hipchops.entity.Message;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MessageParserTest {
 
-    private MessageParser mMessageParser;
     private Gson mGson;
+    private MessageParser mMessageParser;
+
+    @Mock WebPageTitleRepository mTitleRepository;
 
     @Before
     public void setup() throws IOException {
-        WebPageTitleRepository titleRepository = mock(WebPageTitleRepository.class);
+        initMocks(this);
+
+        mGson = new Gson();
+
+        mMessageParser = new MessageParser(mTitleRepository);
+
         WebPageTitleLocalProvider localProvider = new WebPageTitleLocalProvider();
 
         // Add all known local titles
         for (String key : localProvider.keySet())
-            when(titleRepository.getWebPageTitle(key))
+            when(mTitleRepository.getWebPageTitle(key))
                     .thenReturn(localProvider.getWebPageTitle(key));
-
-        mMessageParser = new MessageParser(titleRepository);
-        mGson = new Gson();
     }
 
     @After
     public void tearDown() {
-        mMessageParser = null;
-        mGson = null;
     }
 
     private void assertMessageEquals(String expectedJson, String actualInput) {

@@ -7,7 +7,6 @@ import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
 import com.neilmarietta.hipchops.entity.Emoticon;
 import com.neilmarietta.hipchops.entity.Link;
 import com.neilmarietta.hipchops.entity.Message;
-import com.neilmarietta.hipchops.internal.di.component.DaggerTestMessageComponent;
 import com.neilmarietta.hipchops.presentation.model.EmoticonUrls;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.util.MessageParser;
@@ -16,25 +15,30 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.inject.Inject;
+import org.mockito.Mock;
 
 import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MessageUseCaseTest {
 
-    @Inject MessageUseCase mMessageUseCase;
-    @Inject MessageParser mMessageParser;
-    @Inject EmoticonRepository mEmoticonRepository;
-    @Inject Gson mGson;
+    private Gson mGson;
+    private MessageUseCase mMessageUseCase;
+
+    @Mock MessageParser mMessageParser;
+    @Mock EmoticonRepository mEmoticonRepository;
 
     @Before
     public void setup() {
-        DaggerTestMessageComponent.create().inject(this);
+        initMocks(this);
+
+        mGson = new Gson();
+
+        mMessageUseCase = new MessageUseCase(mGson, mMessageParser, mEmoticonRepository);
         mMessageUseCase.setSubscribeOn(Schedulers.immediate());
         mMessageUseCase.setObserveOn(Schedulers.immediate());
     }
@@ -42,10 +46,6 @@ public class MessageUseCaseTest {
     @After
     public void tearDown() {
         mMessageUseCase.unsubscribe();
-        mMessageUseCase = null;
-        mMessageParser = null;
-        mEmoticonRepository = null;
-        mGson = null;
     }
 
     private void assertEquals(IOMessage expected, IOMessage actual) {

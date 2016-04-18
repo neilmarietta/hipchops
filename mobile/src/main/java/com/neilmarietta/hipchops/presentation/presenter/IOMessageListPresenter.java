@@ -2,27 +2,27 @@ package com.neilmarietta.hipchops.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.neilmarietta.hipchops.contract.IOMessageListContract;
 import com.neilmarietta.hipchops.data.TestCases;
 import com.neilmarietta.hipchops.interactor.MessageUseCase;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
-import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
 
 import javax.inject.Inject;
 
 import rx.Subscriber;
 
-public class IOMessageListPresenter implements Presenter {
+public class IOMessageListPresenter implements Presenter, IOMessageListContract.UserActionListener {
 
     private MessageUseCase mMessageUseCase;
 
-    private IOMessageListView mMessageListView;
+    private IOMessageListContract.View mMessageListView;
 
     @Inject
     public IOMessageListPresenter(MessageUseCase messageUseCase) {
         mMessageUseCase = messageUseCase;
     }
 
-    public void setView(@NonNull IOMessageListView view) {
+    public void setView(@NonNull IOMessageListContract.View view) {
         mMessageListView = view;
     }
 
@@ -30,18 +30,21 @@ public class IOMessageListPresenter implements Presenter {
         loadMessageList();
     }
 
+    @Override
     public void loadMessageList() {
         showViewLoading();
         mMessageListView.renderMessageList(null);
         getMessageList();
     }
 
+    @Override
     public void addMessage() {
         showViewLoading();
         getMessage();
     }
 
-    public void addMessage(String input) {
+    @Override
+    public void addMessage(@NonNull String input) {
         showViewLoading();
         getMessage(input);
     }
