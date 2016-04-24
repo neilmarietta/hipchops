@@ -29,6 +29,10 @@ public class TestCases {
         return sTestArray[sCurrentIndex++ % sTestArray.length].in;
     }
 
+    public static void resetCurrentIndex() {
+        sCurrentIndex = 0;
+    }
+
     public static List<String> getInputs() {
         List<String> inputs = new ArrayList<>();
         for (InputOutput inputOutput : TestCases.sTestArray)
