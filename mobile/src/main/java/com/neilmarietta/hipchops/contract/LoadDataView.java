@@ -1,4 +1,4 @@
-package com.neilmarietta.hipchops.presentation.view;
+package com.neilmarietta.hipchops.contract;
 
 import android.content.Context;
 

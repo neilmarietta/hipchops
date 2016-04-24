@@ -1,43 +1,62 @@
-package com.neilmarietta.hipchops;
+package com.neilmarietta.hipchops.util;
 
 import com.google.gson.Gson;
 import com.neilmarietta.hipchops.data.TestCases;
+import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
+import com.neilmarietta.hipchops.data.repository.provider.WebPageTitleLocalProvider;
 import com.neilmarietta.hipchops.entity.Link;
 import com.neilmarietta.hipchops.entity.Message;
-import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleLocalProvider;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-public class MessageTest {
+public class MessageParserTest {
 
-    private static Gson sGson = new Gson();
-    private static MessageParser sParser = new MessageParser(new WebPageTitleLocalProvider());
+    private Gson mGson;
+    private MessageParser mMessageParser;
+
+    @Mock WebPageTitleRepository mTitleRepository;
+
+    @Before
+    public void setup() throws IOException {
+        initMocks(this);
+
+        mGson = new Gson();
+
+        mMessageParser = new MessageParser(mTitleRepository);
+
+        WebPageTitleLocalProvider localProvider = new WebPageTitleLocalProvider();
+
+        // Add all known local titles
+        for (String key : localProvider.keySet())
+            when(mTitleRepository.getWebPageTitle(key))
+                    .thenReturn(localProvider.getWebPageTitle(key));
+    }
+
+    @After
+    public void tearDown() {
+    }
 
     private void assertMessageEquals(String expectedJson, String actualInput) {
         // Avoid different JSON indentation/format/order
-        try {
-            assertEquals(
-                    // By regenerating JSON from JSON
-                    sGson.toJson(sGson.fromJson(expectedJson, Message.class)),
-                    sGson.toJson(sParser.parse(actualInput)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals(
+                // By regenerating JSON from JSON
+                mGson.toJson(mGson.fromJson(expectedJson, Message.class)),
+                mGson.toJson(mMessageParser.parse(actualInput)));
     }
 
     private void assertMessageEquals(Message expectedMessage, String actualInput) {
-        try {
-            assertEquals(
-                    sGson.toJson(expectedMessage),
-                    sGson.toJson(sParser.parse(actualInput)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals(
+                mGson.toJson(expectedMessage),
+                mGson.toJson(mMessageParser.parse(actualInput)));
     }
 
     @Test

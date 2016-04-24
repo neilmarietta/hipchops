@@ -2,30 +2,27 @@ package com.neilmarietta.hipchops.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.neilmarietta.hipchops.contract.IOMessageListContract;
 import com.neilmarietta.hipchops.data.TestCases;
-import com.neilmarietta.hipchops.interactor.GetInputMessageListUseCase;
-import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
+import com.neilmarietta.hipchops.interactor.MessageUseCase;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
-import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
 
-import java.util.List;
+import javax.inject.Inject;
 
 import rx.Subscriber;
 
-public class IOMessageListPresenter implements Presenter {
+public class IOMessageListPresenter implements Presenter, IOMessageListContract.UserActionListener {
 
-    private ParseMessageUseCase mParseMessageUseCase;
-    private GetInputMessageListUseCase mGetInputMessageListUseCase;
+    private MessageUseCase mMessageUseCase;
 
-    private IOMessageListView mMessageListView;
+    private IOMessageListContract.View mMessageListView;
 
-    public IOMessageListPresenter(GetInputMessageListUseCase inputMessageListUseCase,
-                                  ParseMessageUseCase parseMessageUseCase) {
-        mGetInputMessageListUseCase = inputMessageListUseCase;
-        mParseMessageUseCase = parseMessageUseCase;
+    @Inject
+    public IOMessageListPresenter(MessageUseCase messageUseCase) {
+        mMessageUseCase = messageUseCase;
     }
 
-    public void setView(@NonNull IOMessageListView view) {
+    public void setView(@NonNull IOMessageListContract.View view) {
         mMessageListView = view;
     }
 
@@ -33,60 +30,38 @@ public class IOMessageListPresenter implements Presenter {
         loadMessageList();
     }
 
+    @Override
     public void loadMessageList() {
         showViewLoading();
+        mMessageListView.renderMessageList(null);
         getMessageList();
     }
 
+    @Override
     public void addMessage() {
         showViewLoading();
         getMessage();
     }
 
-    public void addMessage(String input) {
+    @Override
+    public void addMessage(@NonNull String input) {
         showViewLoading();
         getMessage(input);
     }
 
     private void getMessageList() {
-        mGetInputMessageListUseCase.execute(new IOMessageListSubscriber());
-    }
-
-    private final class IOMessageListSubscriber extends Subscriber<List<IOMessage>> {
-
-        @Override
-        public void onCompleted() {
-            IOMessageListPresenter.this.hideViewLoading();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            IOMessageListPresenter.this.hideViewLoading();
-            IOMessageListPresenter.this.showErrorMessage(e.getMessage());
-        }
-
-        @Override
-        public void onNext(List<IOMessage> messageList) {
-            IOMessageListPresenter.this.mMessageListView.renderMessageList(messageList);
-        }
+        mMessageUseCase.getMessageList(TestCases.getInputs(), new IOMessageListSubscriber());
     }
 
     private void getMessage() {
-        String input = TestCases.getNextInput();
-        mParseMessageUseCase.setMessage(input).execute(new ParseOutputSubscriber(input));
+        getMessage(TestCases.getNextInput());
     }
 
     private void getMessage(String input) {
-        mParseMessageUseCase.setMessage(input).execute(new ParseOutputSubscriber(input));
+        mMessageUseCase.getMessage(input, new IOMessageListSubscriber());
     }
 
-    private final class ParseOutputSubscriber extends Subscriber<String> {
-
-        private String mInput;
-
-        public ParseOutputSubscriber(String input) {
-            mInput = input;
-        }
+    private final class IOMessageListSubscriber extends Subscriber<IOMessage> {
 
         @Override
         public void onCompleted() {
@@ -100,8 +75,8 @@ public class IOMessageListPresenter implements Presenter {
         }
 
         @Override
-        public void onNext(String output) {
-            IOMessageListPresenter.this.mMessageListView.addMessage(new IOMessage(mInput, output));
+        public void onNext(IOMessage message) {
+            IOMessageListPresenter.this.mMessageListView.addMessage(message);
         }
     }
 
@@ -128,5 +103,6 @@ public class IOMessageListPresenter implements Presenter {
     @Override
     public void destroy() {
         mMessageListView = null;
+        mMessageUseCase.unsubscribe();
     }
 }

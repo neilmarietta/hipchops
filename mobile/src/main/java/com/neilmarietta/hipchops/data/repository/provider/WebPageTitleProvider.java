@@ -1,4 +1,4 @@
-package com.neilmarietta.hipchops.util;
+package com.neilmarietta.hipchops.data.repository.provider;
 
 import java.io.IOException;
 

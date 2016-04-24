@@ -1,5 +1,6 @@
 package com.neilmarietta.hipchops.util;
 
+import com.neilmarietta.hipchops.data.repository.WebPageTitleRepository;
 import com.neilmarietta.hipchops.entity.Link;
 import com.neilmarietta.hipchops.entity.Message;
 
@@ -8,13 +9,13 @@ import java.util.regex.Matcher;
 
 public class MessageParser {
 
-    private WebPageTitleProvider mTitleProvider;
+    private WebPageTitleRepository mWebPageTitleRepository;
 
-    public MessageParser(WebPageTitleProvider titleProvider) {
-        mTitleProvider = titleProvider;
+    public MessageParser(WebPageTitleRepository webPageTitleRepository) {
+        mWebPageTitleRepository = webPageTitleRepository;
     }
 
-    public Message parse(String input) throws IOException {
+    public Message parse(String input) {
         Message message = new Message();
 
         Matcher mentions = Regex.MENTION.matcher(input);
@@ -36,7 +37,12 @@ public class MessageParser {
         Matcher links = Regex.LINK.matcher(input);
         while (links.find()) {
             String link = links.group();
-            String title = mTitleProvider.getWebPageTitle(link);
+            String title;
+            try {
+                title = mWebPageTitleRepository.getWebPageTitle(link);
+            } catch (IOException e) {
+                title = e.getMessage();
+            }
             message.addLink(new Link(title, link));
         }
 

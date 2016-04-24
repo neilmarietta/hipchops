@@ -14,40 +14,44 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.neilmarietta.hipchops.HipChopsApplication;
 import com.neilmarietta.hipchops.R;
-import com.neilmarietta.hipchops.interactor.GetInputMessageListUseCase;
-import com.neilmarietta.hipchops.interactor.ParseMessageUseCase;
+import com.neilmarietta.hipchops.contract.IOMessageListContract;
+import com.neilmarietta.hipchops.internal.di.component.DaggerMessageComponent;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.presenter.IOMessageListPresenter;
-import com.neilmarietta.hipchops.presentation.view.IOMessageListView;
+import com.neilmarietta.hipchops.contract.LoadDataView;
 import com.neilmarietta.hipchops.presentation.view.adapter.IOMessageAdapter;
-import com.neilmarietta.hipchops.util.MessageParser;
-import com.neilmarietta.hipchops.util.WebPageTitleInternetProvider;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class IOMessageListFragment extends Fragment implements IOMessageListView {
+public class IOMessageListFragment extends Fragment implements IOMessageListContract.View {
 
-    // TODO : Inject with Dagger 2
-    private MessageParser mMessageParser = new MessageParser(new WebPageTitleInternetProvider());
-    private IOMessageListPresenter mListPresenter =
-            new IOMessageListPresenter(
-                    new GetInputMessageListUseCase(mMessageParser),
-                    new ParseMessageUseCase(mMessageParser));
+    @Inject IOMessageListPresenter mListPresenter;
 
     private IOMessageAdapter mMessageAdapter;
 
     @Bind(R.id.rv_messages) RecyclerView mMessageRecycledView;
     @Bind(R.id.rl_progress) RelativeLayout mProgressRelativeLayout;
 
+    public IOMessageListFragment() {
+        setRetainInstance(true);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mMessageAdapter = new IOMessageAdapter(getContext());
+
+        DaggerMessageComponent.builder()
+                .apiConnectionComponent(HipChopsApplication.from(getContext()).getApiConnectionComponent())
+                .build().inject(this);
     }
 
     @Override
@@ -105,8 +109,7 @@ public class IOMessageListFragment extends Fragment implements IOMessageListView
 
     @Override
     public void renderMessageList(List<IOMessage> messages) {
-        if (messages != null)
-            mMessageAdapter.setMessages(messages);
+        mMessageAdapter.setMessages(messages);
     }
 
     @Override
