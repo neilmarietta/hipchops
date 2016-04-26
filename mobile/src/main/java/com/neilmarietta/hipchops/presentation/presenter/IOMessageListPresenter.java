@@ -2,28 +2,35 @@ package com.neilmarietta.hipchops.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
-import com.neilmarietta.hipchops.contract.IOMessageListContract;
+import com.neilmarietta.hipchops.contract.IOMessageList;
 import com.neilmarietta.hipchops.data.TestCases;
 import com.neilmarietta.hipchops.interactor.MessageUseCase;
+import com.neilmarietta.hipchops.presentation.BasePresenter;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 
 import javax.inject.Inject;
 
 import rx.Subscriber;
 
-public class IOMessageListPresenter implements Presenter, IOMessageListContract.UserActionListener {
+public class IOMessageListPresenter extends BasePresenter<IOMessageList.View>
+        implements IOMessageList.UserActionListener {
 
     private MessageUseCase mMessageUseCase;
-
-    private IOMessageListContract.View mMessageListView;
 
     @Inject
     public IOMessageListPresenter(MessageUseCase messageUseCase) {
         mMessageUseCase = messageUseCase;
     }
 
-    public void setView(@NonNull IOMessageListContract.View view) {
-        mMessageListView = view;
+    @Override
+    public void attachView(@NonNull IOMessageList.View view) {
+        super.attachView(view);
+    }
+
+    @Override
+    public void detachView() {
+        super.detachView();
+        mMessageUseCase.unsubscribe();
     }
 
     public void initialize() {
@@ -32,20 +39,20 @@ public class IOMessageListPresenter implements Presenter, IOMessageListContract.
 
     @Override
     public void loadMessageList() {
-        showViewLoading();
-        mMessageListView.renderMessageList(null);
+        getMvpView().showLoading();
+        getMvpView().renderMessageList(null);
         getMessageList();
     }
 
     @Override
     public void addMessage() {
-        showViewLoading();
+        getMvpView().showLoading();
         getMessage();
     }
 
     @Override
     public void addMessage(@NonNull String input) {
-        showViewLoading();
+        getMvpView().showLoading();
         getMessage(input);
     }
 
@@ -65,44 +72,18 @@ public class IOMessageListPresenter implements Presenter, IOMessageListContract.
 
         @Override
         public void onCompleted() {
-            IOMessageListPresenter.this.hideViewLoading();
+            IOMessageListPresenter.this.getMvpView().hideLoading();
         }
 
         @Override
         public void onError(Throwable e) {
-            IOMessageListPresenter.this.hideViewLoading();
-            IOMessageListPresenter.this.showErrorMessage(e.getMessage());
+            IOMessageListPresenter.this.getMvpView().hideLoading();
+            IOMessageListPresenter.this.getMvpView().showError(e.getMessage());
         }
 
         @Override
         public void onNext(IOMessage message) {
-            IOMessageListPresenter.this.mMessageListView.addMessage(message);
+            IOMessageListPresenter.this.getMvpView().addMessage(message);
         }
-    }
-
-    private void showViewLoading() {
-        mMessageListView.showLoading();
-    }
-
-    private void hideViewLoading() {
-        mMessageListView.hideLoading();
-    }
-
-    private void showErrorMessage(String errorMessage) {
-        mMessageListView.showError(errorMessage);
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void destroy() {
-        mMessageListView = null;
-        mMessageUseCase.unsubscribe();
     }
 }

@@ -1,7 +1,7 @@
 package com.neilmarietta.hipchops.presentation.view.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +16,10 @@ import android.widget.RelativeLayout;
 
 import com.neilmarietta.hipchops.HipChopsApplication;
 import com.neilmarietta.hipchops.R;
-import com.neilmarietta.hipchops.contract.IOMessageListContract;
+import com.neilmarietta.hipchops.contract.IOMessageList;
 import com.neilmarietta.hipchops.internal.di.component.DaggerMessageComponent;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 import com.neilmarietta.hipchops.presentation.presenter.IOMessageListPresenter;
-import com.neilmarietta.hipchops.contract.LoadDataView;
 import com.neilmarietta.hipchops.presentation.view.adapter.IOMessageAdapter;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class IOMessageListFragment extends Fragment implements IOMessageListContract.View {
+public class IOMessageListFragment extends Fragment implements IOMessageList.View {
 
     @Inject IOMessageListPresenter mListPresenter;
 
@@ -63,16 +62,22 @@ public class IOMessageListFragment extends Fragment implements IOMessageListCont
     }
 
     private void setupRecyclerView() {
-        mMessageRecycledView.setLayoutManager(new LinearLayoutManager(context()));
+        mMessageRecycledView.setLayoutManager(new LinearLayoutManager(getContext()));
         mMessageRecycledView.setAdapter(mMessageAdapter);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mListPresenter.setView(this);
+        mListPresenter.attachView(this);
         if (savedInstanceState == null)
             mListPresenter.initialize();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mListPresenter.detachView();
     }
 
     @Override
@@ -90,30 +95,12 @@ public class IOMessageListFragment extends Fragment implements IOMessageListCont
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mListPresenter.resume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mListPresenter.pause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mListPresenter.destroy();
-    }
-
-    @Override
     public void renderMessageList(List<IOMessage> messages) {
         mMessageAdapter.setMessages(messages);
     }
 
     @Override
-    public void addMessage(IOMessage message) {
+    public void addMessage(@NonNull IOMessage message) {
         mMessageAdapter.addMessage(message);
         mMessageRecycledView.scrollToPosition(0);
     }
@@ -139,10 +126,5 @@ public class IOMessageListFragment extends Fragment implements IOMessageListCont
     @Override
     public void showError(String message) {
         Snackbar.make(mMessageRecycledView, message, Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
-    public Context context() {
-        return getActivity().getApplicationContext();
     }
 }

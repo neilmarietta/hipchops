@@ -1,7 +1,7 @@
 package com.neilmarietta.hipchops.presentation.presenter;
 
 import com.google.gson.Gson;
-import com.neilmarietta.hipchops.contract.IOMessageListContract;
+import com.neilmarietta.hipchops.contract.IOMessageList;
 import com.neilmarietta.hipchops.data.repository.EmoticonRepository;
 import com.neilmarietta.hipchops.entity.Emoticon;
 import com.neilmarietta.hipchops.entity.Link;
@@ -34,7 +34,7 @@ public class IOMessageListPresenterTest {
 
     @Mock MessageParser mMessageParser;
     @Mock EmoticonRepository mEmoticonRepository;
-    @Mock IOMessageListContract.View mMessageListView;
+    @Mock IOMessageList.View mMessageListView;
 
     @Before
     public void setup() {
@@ -47,7 +47,7 @@ public class IOMessageListPresenterTest {
         mMessageUseCase.setObserveOn(Schedulers.immediate());
 
         mMessageListPresenter = new IOMessageListPresenter(mMessageUseCase);
-        mMessageListPresenter.setView(mMessageListView);
+        mMessageListPresenter.attachView(mMessageListView);
 
         Message message = new Message();
         message.addMention("test");
@@ -71,7 +71,7 @@ public class IOMessageListPresenterTest {
 
     @After
     public void tearDown() {
-        mMessageListPresenter.destroy();
+        mMessageListPresenter.detachView();
         mMessageUseCase.unsubscribe();
     }
 

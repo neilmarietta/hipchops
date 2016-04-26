@@ -2,13 +2,14 @@ package com.neilmarietta.hipchops.contract;
 
 import android.support.annotation.NonNull;
 
+import com.neilmarietta.hipchops.presentation.MvpLoadView;
 import com.neilmarietta.hipchops.presentation.model.IOMessage;
 
 import java.util.List;
 
-public class IOMessageListContract {
+public class IOMessageList {
 
-    public interface View extends LoadDataView {
+    public interface View extends MvpLoadView {
 
         void renderMessageList(List<IOMessage> messages);
 
